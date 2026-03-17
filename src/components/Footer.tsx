@@ -1,45 +1,57 @@
 import { Phone, Mail, MapPin } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Footer = () => {
+  const { t } = useLanguage();
+
+  const quickLinks = [
+    { label: t("nav.home"), href: "#hero" },
+    { label: t("nav.services"), href: "#services" },
+    { label: t("nav.shop"), href: "#shop" },
+    { label: t("nav.whyUs"), href: "#why-us" },
+    { label: t("footer.bookService"), href: "#booking" },
+  ];
+
+  const serviceLinks = [
+    "services.homeNursing", "services.homeDoctor", "services.physiotherapy",
+    "services.homeLab", "services.medicalEquipment",
+  ];
+
   return (
     <footer className="bg-secondary text-secondary-foreground py-16">
       <div className="container mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-          {/* Brand */}
           <div className="md:col-span-1">
             <h3 className="text-3xl font-bold text-gradient font-arabic mb-4">رفقة</h3>
             <p className="text-teal-100/70 text-sm leading-relaxed">
-              رعاية طبية متميزة في منزلك. نوفر أفضل الكوادر الطبية والتمريضية لخدمتك أنت وعائلتك.
+              {t("footer.desc")}
             </p>
           </div>
 
-          {/* Quick Links */}
           <div>
-            <h4 className="font-bold text-secondary-foreground mb-4">روابط سريعة</h4>
+            <h4 className="font-bold text-secondary-foreground mb-4">{t("footer.quickLinks")}</h4>
             <ul className="space-y-3">
-              {["الرئيسية", "خدماتنا", "المتجر الطبي", "لماذا رفقة؟", "احجز خدمتك"].map((link) => (
-                <li key={link}>
-                  <a href="#" className="text-sm text-teal-100/60 hover:text-teal-100 transition-colors">{link}</a>
+              {quickLinks.map((link) => (
+                <li key={link.href}>
+                  <a href={link.href} className="text-sm text-teal-100/60 hover:text-teal-100 transition-colors">{link.label}</a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Services */}
           <div>
-            <h4 className="font-bold text-secondary-foreground mb-4">خدماتنا</h4>
+            <h4 className="font-bold text-secondary-foreground mb-4">{t("footer.ourServices")}</h4>
             <ul className="space-y-3">
-              {["تمريض منزلي", "طبيب منزلي", "علاج طبيعي", "تحاليل منزلية", "أجهزة طبية"].map((s) => (
-                <li key={s}>
-                  <a href="#services" className="text-sm text-teal-100/60 hover:text-teal-100 transition-colors">{s}</a>
+              {serviceLinks.map((key) => (
+                <li key={key}>
+                  <a href="#services" className="text-sm text-teal-100/60 hover:text-teal-100 transition-colors">{t(key)}</a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Contact */}
           <div>
-            <h4 className="font-bold text-secondary-foreground mb-4">تواصل معنا</h4>
+            <h4 className="font-bold text-secondary-foreground mb-4">{t("footer.contactUs")}</h4>
             <div className="space-y-4">
               <a href="tel:+966500000000" className="flex items-center gap-3 text-sm text-teal-100/60 hover:text-teal-100 transition-colors">
                 <Phone className="w-4 h-4" />
@@ -51,7 +63,7 @@ const Footer = () => {
               </a>
               <div className="flex items-center gap-3 text-sm text-teal-100/60">
                 <MapPin className="w-4 h-4" />
-                المملكة العربية السعودية
+                {t("footer.location")}
               </div>
             </div>
           </div>
@@ -59,7 +71,7 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-forest-500/20 text-center">
           <p className="text-sm text-teal-100/50">
-            © {new Date().getFullYear()} رفقة | Refqah. جميع الحقوق محفوظة.
+            © {new Date().getFullYear()} رفقة | Refqah. {t("footer.rights")}
           </p>
         </div>
       </div>

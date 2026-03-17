@@ -2,19 +2,18 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
-
-const services = [
-  "تمريض منزلي",
-  "طبيب منزلي",
-  "مساعد تمريض",
-  "جليس مسنين",
-  "علاج طبيعي",
-  "تحاليل منزلية",
-  "أجهزة طبية",
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const BookingSection = () => {
   const [selectedService, setSelectedService] = useState("");
+  const { t } = useLanguage();
+
+  const serviceKeys = [
+    "booking.homeNursing", "booking.homeDoctor", "booking.nursingAssistant",
+    "booking.elderlyCompanion", "booking.physiotherapy", "booking.homeLab", "booking.medicalEquipment",
+  ];
+
+  const cityKeys = ["booking.riyadh", "booking.jeddah", "booking.dammam", "booking.makkah", "booking.madinah"];
 
   return (
     <section id="booking" className="py-20 md:py-28 bg-background">
@@ -22,13 +21,13 @@ const BookingSection = () => {
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
             <span className="inline-block px-4 py-1.5 rounded-full bg-accent text-primary text-sm font-semibold mb-4">
-              احجز خدمتك
+              {t("booking.badge")}
             </span>
             <h2 className="text-3xl md:text-4xl font-bold text-secondary font-arabic mb-4">
-              ابدأ رحلة الرعاية الآن
+              {t("booking.title")}
             </h2>
             <p className="text-muted-foreground text-lg">
-              املأ النموذج وسنتواصل معك خلال دقائق
+              {t("booking.desc")}
             </p>
           </div>
 
@@ -42,18 +41,18 @@ const BookingSection = () => {
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">الاسم الكامل</label>
+                <label className="block text-sm font-semibold text-foreground mb-2">{t("booking.fullName")}</label>
                 <input
                   type="text"
-                  placeholder="أدخل اسمك الكامل"
+                  placeholder={t("booking.fullNamePlaceholder")}
                   className="w-full px-4 py-3 rounded-2xl bg-muted border-0 text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary outline-none transition-all"
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">رقم الجوال</label>
+                <label className="block text-sm font-semibold text-foreground mb-2">{t("booking.phone")}</label>
                 <input
                   type="tel"
-                  placeholder="05XXXXXXXX"
+                  placeholder={t("booking.phonePlaceholder")}
                   dir="ltr"
                   className="w-full px-4 py-3 rounded-2xl bg-muted border-0 text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary outline-none transition-all tabular-nums text-right"
                 />
@@ -61,39 +60,40 @@ const BookingSection = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">الخدمة المطلوبة</label>
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("booking.service")}</label>
               <div className="flex flex-wrap gap-2">
-                {services.map((service) => (
-                  <button
-                    key={service}
-                    type="button"
-                    onClick={() => setSelectedService(service)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                      selectedService === service
-                        ? "bg-primary text-primary-foreground shadow-md"
-                        : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                    }`}
-                  >
-                    {service}
-                  </button>
-                ))}
+                {serviceKeys.map((key) => {
+                  const label = t(key);
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setSelectedService(key)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                        selectedService === key
+                          ? "bg-primary text-primary-foreground shadow-md"
+                          : "bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">المدينة</label>
+                <label className="block text-sm font-semibold text-foreground mb-2">{t("booking.city")}</label>
                 <select className="w-full px-4 py-3 rounded-2xl bg-muted border-0 text-foreground focus:ring-2 focus:ring-primary outline-none transition-all appearance-none">
-                  <option value="">اختر المدينة</option>
-                  <option>الرياض</option>
-                  <option>جدة</option>
-                  <option>الدمام</option>
-                  <option>مكة المكرمة</option>
-                  <option>المدينة المنورة</option>
+                  <option value="">{t("booking.selectCity")}</option>
+                  {cityKeys.map((key) => (
+                    <option key={key}>{t(key)}</option>
+                  ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">التاريخ المفضل</label>
+                <label className="block text-sm font-semibold text-foreground mb-2">{t("booking.date")}</label>
                 <input
                   type="date"
                   className="w-full px-4 py-3 rounded-2xl bg-muted border-0 text-foreground focus:ring-2 focus:ring-primary outline-none transition-all"
@@ -102,17 +102,17 @@ const BookingSection = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-foreground mb-2">ملاحظات إضافية</label>
+              <label className="block text-sm font-semibold text-foreground mb-2">{t("booking.notes")}</label>
               <textarea
                 rows={3}
-                placeholder="أخبرنا بتفاصيل حالتك أو أي متطلبات خاصة..."
+                placeholder={t("booking.notesPlaceholder")}
                 className="w-full px-4 py-3 rounded-2xl bg-muted border-0 text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary outline-none transition-all resize-none"
               />
             </div>
 
             <Button variant="cta" size="xl" className="w-full" type="submit">
               <Send className="w-5 h-5" />
-              ابدأ رحلة الرعاية
+              {t("booking.submit")}
             </Button>
           </motion.form>
         </div>
