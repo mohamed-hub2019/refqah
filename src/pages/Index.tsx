@@ -1,3 +1,4 @@
+import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import ServicesSection from "@/components/ServicesSection";
@@ -7,9 +8,10 @@ import BookingSection from "@/components/BookingSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import Footer from "@/components/Footer";
 
-const Index = () => {
+const IndexContent = () => {
+  const { dir, lang } = useLanguage();
   return (
-    <div dir="rtl" className="font-arabic">
+    <div dir={dir} className={lang === "ar" ? "font-arabic" : "font-sans"}>
       <Navbar />
       <HeroSection />
       <ServicesSection />
@@ -21,5 +23,11 @@ const Index = () => {
     </div>
   );
 };
+
+const Index = () => (
+  <LanguageProvider>
+    <IndexContent />
+  </LanguageProvider>
+);
 
 export default Index;
