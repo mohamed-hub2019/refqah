@@ -1,16 +1,78 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Send, ChevronDown, ChevronUp, Phone, MessageCircle, Clock } from "lucide-react";
+import { Send, ChevronDown, ChevronUp, Phone, MessageCircle, Clock, Loader2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { z } from "zod";
+
+const bookingSchema = z.object({
+  full_name: z.string().trim().min(2, "الاسم قصير جداً").max(100),
+  phone: z.string().trim().regex(/^01[0-9]{9}$/, "رقم هاتف مصري غير صحيح"),
+  email: z.string().trim().email().max(255).optional().or(z.literal("")),
+  contact_method: z.string().max(50).optional(),
+  service: z.string().min(1, "اختر الخدمة"),
+  preferred_time: z.string().max(50).optional(),
+  city_area: z.string().trim().min(2, "أدخل المدينة").max(100),
+  short_address: z.string().trim().max(255).optional(),
+  case_description: z.string().trim().max(1000).optional(),
+});
 
 const BookingSection = () => {
   const { t } = useLanguage();
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [selectedService, setSelectedService] = useState("");
   const [contactMethod, setContactMethod] = useState("");
   const [preferredTime, setPreferredTime] = useState("");
+  const [cityArea, setCityArea] = useState("");
+  const [shortAddress, setShortAddress] = useState("");
+  const [caseDescription, setCaseDescription] = useState("");
   const [consent, setConsent] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!consent) return;
+
+    const parsed = bookingSchema.safeParse({
+      full_name: fullName,
+      phone,
+      email,
+      contact_method: contactMethod,
+      service: selectedService,
+      preferred_time: preferredTime,
+      city_area: cityArea,
+      short_address: shortAddress,
+      case_description: caseDescription,
+    });
+
+    if (!parsed.success) {
+      const first = parsed.error.errors[0];
+      toast.error(first?.message || "تأكد من البيانات المدخلة");
+      return;
+    }
+
+    setSubmitting(true);
+    const { error } = await supabase.from("bookings").insert({
+      ...parsed.data,
+      email: parsed.data.email || null,
+    });
+    setSubmitting(false);
+
+    if (error) {
+      toast.error("حدث خطأ، حاول مرة أخرى");
+      return;
+    }
+
+    toast.success("تم إرسال طلب الحجز بنجاح! هنتواصل معاك قريباً");
+    setFullName(""); setPhone(""); setEmail(""); setSelectedService("");
+    setContactMethod(""); setPreferredTime(""); setCityArea("");
+    setShortAddress(""); setCaseDescription(""); setConsent(false);
+  };
 
   const serviceKeys = [
     "booking.homeNursing", "booking.homeDoctor", "booking.nursingAssistant",
