@@ -110,8 +110,13 @@ const Navbar = () => {
                   {link.label}
                 </a>
               ))}
-              <Button variant="cta" size="lg" className="mt-2" asChild>
-                <a href="#booking">{t("nav.bookNow")}</a>
+              <Button variant="outline" size="lg" className="mt-2" asChild>
+                <Link to={user ? (isAdmin ? "/admin" : "/account") : "/auth"} onClick={() => setIsOpen(false)}>
+                  {user ? (isAdmin ? "لوحة الأدمن" : "حسابي") : "تسجيل الدخول"}
+                </Link>
+              </Button>
+              <Button variant="cta" size="lg" asChild>
+                <a href="#booking" onClick={() => setIsOpen(false)}>{t("nav.bookNow")}</a>
               </Button>
             </div>
           </motion.div>
