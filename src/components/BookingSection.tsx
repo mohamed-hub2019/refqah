@@ -125,7 +125,7 @@ const BookingSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
             className="lg:col-span-2 bg-card rounded-3xl shadow-elevated p-8 md:p-10 space-y-6"
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={handleSubmit}
           >
             <h3 className="text-xl font-bold text-foreground mb-2">{t("booking.formTitle")}</h3>
 
@@ -135,7 +135,11 @@ const BookingSection = () => {
                 <label className="block text-sm font-semibold text-foreground mb-2">{t("booking.fullName")}</label>
                 <input
                   type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   placeholder={t("booking.fullNamePlaceholder")}
+                  maxLength={100}
+                  required
                   className="w-full px-4 py-3 rounded-2xl bg-muted border-0 text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary outline-none transition-all"
                 />
               </div>
@@ -143,8 +147,12 @@ const BookingSection = () => {
                 <label className="block text-sm font-semibold text-foreground mb-2">{t("booking.phone")}</label>
                 <input
                   type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                   placeholder={t("booking.phonePlaceholder")}
                   dir="ltr"
+                  maxLength={11}
+                  required
                   className="w-full px-4 py-3 rounded-2xl bg-muted border-0 text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary outline-none transition-all tabular-nums text-right"
                 />
               </div>
@@ -156,8 +164,11 @@ const BookingSection = () => {
                 <label className="block text-sm font-semibold text-foreground mb-2">{t("booking.email")}</label>
                 <input
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder={t("booking.emailPlaceholder")}
                   dir="ltr"
+                  maxLength={255}
                   className="w-full px-4 py-3 rounded-2xl bg-muted border-0 text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary outline-none transition-all text-right"
                 />
               </div>
@@ -183,6 +194,7 @@ const BookingSection = () => {
                 <select
                   value={selectedService}
                   onChange={(e) => setSelectedService(e.target.value)}
+                  required
                   className="w-full px-4 py-3 rounded-2xl bg-muted border-0 text-foreground focus:ring-2 focus:ring-primary outline-none transition-all appearance-none"
                 >
                   <option value="">{t("booking.selectService")}</option>
@@ -211,7 +223,11 @@ const BookingSection = () => {
                 <label className="block text-sm font-semibold text-foreground mb-2">{t("booking.cityArea")}</label>
                 <input
                   type="text"
+                  value={cityArea}
+                  onChange={(e) => setCityArea(e.target.value)}
                   placeholder={t("booking.cityAreaPlaceholder")}
+                  maxLength={100}
+                  required
                   className="w-full px-4 py-3 rounded-2xl bg-muted border-0 text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary outline-none transition-all"
                 />
               </div>
@@ -219,7 +235,10 @@ const BookingSection = () => {
                 <label className="block text-sm font-semibold text-foreground mb-2">{t("booking.shortAddress")}</label>
                 <input
                   type="text"
+                  value={shortAddress}
+                  onChange={(e) => setShortAddress(e.target.value)}
                   placeholder={t("booking.shortAddressPlaceholder")}
+                  maxLength={255}
                   className="w-full px-4 py-3 rounded-2xl bg-muted border-0 text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary outline-none transition-all"
                 />
               </div>
@@ -230,7 +249,10 @@ const BookingSection = () => {
               <label className="block text-sm font-semibold text-foreground mb-2">{t("booking.caseDescription")}</label>
               <textarea
                 rows={4}
+                value={caseDescription}
+                onChange={(e) => setCaseDescription(e.target.value)}
                 placeholder={t("booking.caseDescriptionPlaceholder")}
+                maxLength={1000}
                 className="w-full px-4 py-3 rounded-2xl bg-muted border-0 text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-primary outline-none transition-all resize-none"
               />
             </div>
@@ -246,8 +268,8 @@ const BookingSection = () => {
               <span className="text-sm text-muted-foreground leading-relaxed">{t("booking.consent")}</span>
             </label>
 
-            <Button variant="cta" size="xl" className="w-full" type="submit" disabled={!consent}>
-              <Send className="w-5 h-5" />
+            <Button variant="cta" size="xl" className="w-full" type="submit" disabled={!consent || submitting}>
+              {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
               {t("booking.submit")}
             </Button>
           </motion.form>
