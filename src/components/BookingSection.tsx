@@ -1,26 +1,29 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Send, ChevronDown, ChevronUp, Phone, MessageCircle, Clock, Loader2 } from "lucide-react";
+import { Send, ChevronDown, ChevronUp, Phone, MessageCircle, Clock, Loader2, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { z } from "zod";
+import { COMPANY_PHONE, COMPANY_WHATSAPP, buildWhatsappBookingMessage } from "@/lib/constants";
 
 const bookingSchema = z.object({
-  full_name: z.string().trim().min(2, "الاسم قصير جداً").max(100),
-  phone: z.string().trim().regex(/^01[0-9]{9}$/, "رقم هاتف مصري غير صحيح"),
-  email: z.string().trim().email().max(255).optional().or(z.literal("")),
+  full_name: z.string().trim().min(2, "الاسم قصير جداً").max(100, "الاسم طويل جداً"),
+  phone: z.string().trim().regex(/^01[0-9]{9}$/, "رقم هاتف مصري غير صحيح (01xxxxxxxxx)"),
+  email: z.string().trim().email("بريد إلكتروني غير صحيح").max(255).optional().or(z.literal("")),
   contact_method: z.string().max(50).optional(),
   service: z.string().min(1, "اختر الخدمة"),
   preferred_time: z.string().max(50).optional(),
   city_area: z.string().trim().min(2, "أدخل المدينة").max(100),
   short_address: z.string().trim().max(255).optional(),
-  case_description: z.string().trim().max(1000).optional(),
+  case_description: z.string().trim().max(1000, "الوصف طويل جداً").optional(),
 });
 
 const BookingSection = () => {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
@@ -33,21 +36,20 @@ const BookingSection = () => {
   const [consent, setConsent] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [successData, setSuccessData] = useState<null | {
+    full_name: string; phone: string; service: string; city_area: string;
+    preferred_time?: string | null; case_description?: string | null;
+  }>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!consent) return;
 
     const parsed = bookingSchema.safeParse({
-      full_name: fullName,
-      phone,
-      email,
-      contact_method: contactMethod,
-      service: selectedService,
-      preferred_time: preferredTime,
-      city_area: cityArea,
-      short_address: shortAddress,
-      case_description: caseDescription,
+      full_name: fullName, phone, email,
+      contact_method: contactMethod, service: selectedService,
+      preferred_time: preferredTime, city_area: cityArea,
+      short_address: shortAddress, case_description: caseDescription,
     });
 
     if (!parsed.success) {
@@ -60,6 +62,7 @@ const BookingSection = () => {
     const { error } = await supabase.from("bookings").insert({
       ...parsed.data,
       email: parsed.data.email || null,
+      user_id: user?.id ?? null,
     } as any);
     setSubmitting(false);
 
@@ -69,6 +72,14 @@ const BookingSection = () => {
     }
 
     toast.success("تم إرسال طلب الحجز بنجاح! هنتواصل معاك قريباً");
+    setSuccessData({
+      full_name: parsed.data.full_name,
+      phone: parsed.data.phone,
+      service: parsed.data.service,
+      city_area: parsed.data.city_area,
+      preferred_time: parsed.data.preferred_time,
+      case_description: parsed.data.case_description,
+    });
     setFullName(""); setPhone(""); setEmail(""); setSelectedService("");
     setContactMethod(""); setPreferredTime(""); setCityArea("");
     setShortAddress(""); setCaseDescription(""); setConsent(false);
@@ -115,6 +126,38 @@ const BookingSection = () => {
             {t("booking.desc")}
           </p>
         </div>
+
+        {/* Success card */}
+        {successData && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="max-w-3xl mx-auto mb-8 bg-gradient-to-br from-primary/10 to-accent/30 border-2 border-primary/30 rounded-3xl p-6 md:p-8 text-center"
+          >
+            <CheckCircle2 className="w-14 h-14 text-primary mx-auto mb-3" />
+            <h3 className="text-xl font-bold text-foreground mb-2">تم استلام طلبك بنجاح! 🎉</h3>
+            <p className="text-muted-foreground mb-6">
+              أرسل تفاصيل طلبك على واتساب لتأكيد فوري، أو سيتواصل معك فريقنا قريباً.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Button variant="cta" size="lg" asChild>
+                <a href={buildWhatsappBookingMessage(successData)} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="w-5 h-5" />
+                  أكد عبر واتساب
+                </a>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <a href={`tel:${COMPANY_PHONE}`} dir="ltr">
+                  <Phone className="w-5 h-5" />
+                  اتصل بنا
+                </a>
+              </Button>
+              <Button variant="ghost" size="lg" onClick={() => setSuccessData(null)}>
+                إخفاء
+              </Button>
+            </div>
+          </motion.div>
+        )}
 
         {/* Two-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
