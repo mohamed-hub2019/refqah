@@ -1,12 +1,16 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Menu, X, Phone, Globe } from "lucide-react";
+import { Menu, X, Phone, Globe, User as UserIcon, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth } from "@/hooks/useAuth";
+import { COMPANY_PHONE } from "@/lib/constants";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { t, lang, toggleLang } = useLanguage();
+  const { user, isAdmin } = useAuth();
 
   const navLinks = [
     { label: t("nav.home"), href: "#hero" },
@@ -46,10 +50,25 @@ const Navbar = () => {
               <Globe className="w-4 h-4" />
               {lang === "ar" ? "EN" : "عربي"}
             </button>
-            <a href="tel:+966500000000" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
+            <a href={`tel:${COMPANY_PHONE}`} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors" dir="ltr">
               <Phone className="w-4 h-4" />
-              <span className="tabular-nums">966 50 000 0000+</span>
+              <span className="tabular-nums">{COMPANY_PHONE}</span>
             </a>
+            {user ? (
+              <Button variant="outline" size="default" asChild>
+                <Link to={isAdmin ? "/admin" : "/account"}>
+                  {isAdmin ? <Shield className="w-4 h-4" /> : <UserIcon className="w-4 h-4" />}
+                  {isAdmin ? (lang === "ar" ? "الأدمن" : "Admin") : (lang === "ar" ? "حسابي" : "Account")}
+                </Link>
+              </Button>
+            ) : (
+              <Button variant="outline" size="default" asChild>
+                <Link to="/auth">
+                  <UserIcon className="w-4 h-4" />
+                  {lang === "ar" ? "دخول" : "Login"}
+                </Link>
+              </Button>
+            )}
             <Button variant="cta" size="default" asChild>
               <a href="#booking">{t("nav.bookNow")}</a>
             </Button>
