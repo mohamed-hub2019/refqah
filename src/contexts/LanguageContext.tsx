@@ -155,8 +155,8 @@ const translations: Record<string, Record<Lang, string>> = {
   "booking.quickContact.phone": { ar: "الهاتف:", en: "Phone:" },
   "booking.quickContact.whatsapp": { ar: "واتساب:", en: "WhatsApp:" },
   "booking.quickContact.hours": { ar: "ساعات العمل:", en: "Working Hours:" },
-  "booking.quickContact.phoneValue": { ar: "سيتم إضافته لاحقاً", en: "To be added soon" },
-  "booking.quickContact.whatsappValue": { ar: "سيتم إضافته لاحقاً", en: "To be added soon" },
+  "booking.quickContact.phoneValue": { ar: "+201032269905", en: "+201032269905" },
+  "booking.quickContact.whatsappValue": { ar: "+201009906415", en: "+201009906415" },
   "booking.quickContact.hoursValue": { ar: "24/7", en: "24/7" },
 
   // Cities (Egyptian)
