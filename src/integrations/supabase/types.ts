@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       bookings: {
         Row: {
+          admin_notes: string | null
           case_description: string | null
           city_area: string
           contact_method: string | null
@@ -27,10 +28,12 @@ export type Database = {
           preferred_time: string | null
           service: string
           short_address: string | null
-          status: string
+          status: Database["public"]["Enums"]["booking_status"]
           updated_at: string
+          user_id: string | null
         }
         Insert: {
+          admin_notes?: string | null
           case_description?: string | null
           city_area: string
           contact_method?: string | null
@@ -42,10 +45,12 @@ export type Database = {
           preferred_time?: string | null
           service: string
           short_address?: string | null
-          status?: string
+          status?: Database["public"]["Enums"]["booking_status"]
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
+          admin_notes?: string | null
           case_description?: string | null
           city_area?: string
           contact_method?: string | null
@@ -57,8 +62,66 @@ export type Database = {
           preferred_time?: string | null
           service?: string
           short_address?: string | null
-          status?: string
+          status?: Database["public"]["Enums"]["booking_status"]
           updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          city_area: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          short_address: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          city_area?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          short_address?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          city_area?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          short_address?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
         }
         Relationships: []
       }
@@ -67,10 +130,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      booking_status:
+        | "new"
+        | "confirmed"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -197,6 +272,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      booking_status: [
+        "new",
+        "confirmed",
+        "in_progress",
+        "completed",
+        "cancelled",
+      ],
+    },
   },
 } as const
