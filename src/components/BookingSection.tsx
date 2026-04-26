@@ -60,7 +60,7 @@ const BookingSection = () => {
     const { error } = await supabase.from("bookings").insert({
       ...parsed.data,
       email: parsed.data.email || null,
-    });
+    } as any);
     setSubmitting(false);
 
     if (error) {
