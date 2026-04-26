@@ -127,6 +127,38 @@ const BookingSection = () => {
           </p>
         </div>
 
+        {/* Success card */}
+        {successData && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="max-w-3xl mx-auto mb-8 bg-gradient-to-br from-primary/10 to-accent/30 border-2 border-primary/30 rounded-3xl p-6 md:p-8 text-center"
+          >
+            <CheckCircle2 className="w-14 h-14 text-primary mx-auto mb-3" />
+            <h3 className="text-xl font-bold text-foreground mb-2">تم استلام طلبك بنجاح! 🎉</h3>
+            <p className="text-muted-foreground mb-6">
+              أرسل تفاصيل طلبك على واتساب لتأكيد فوري، أو سيتواصل معك فريقنا قريباً.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Button variant="cta" size="lg" asChild>
+                <a href={buildWhatsappBookingMessage(successData)} target="_blank" rel="noopener noreferrer">
+                  <MessageCircle className="w-5 h-5" />
+                  أكد عبر واتساب
+                </a>
+              </Button>
+              <Button variant="outline" size="lg" asChild>
+                <a href={`tel:${COMPANY_PHONE}`} dir="ltr">
+                  <Phone className="w-5 h-5" />
+                  اتصل بنا
+                </a>
+              </Button>
+              <Button variant="ghost" size="lg" onClick={() => setSuccessData(null)}>
+                إخفاء
+              </Button>
+            </div>
+          </motion.div>
+        )}
+
         {/* Two-column layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {/* Form - 2 cols */}
